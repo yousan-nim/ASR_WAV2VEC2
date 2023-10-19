@@ -1,0 +1,45 @@
+pyreverse modeling_wav2vec2.py
+pyreverse modeling_wav2vec2.py -k # only classes name
+pyreverse -o png modeling_wav2vec2.py
+pyreverse modeling_wav2vec2.py feature_extraction_wav2vec2.py -k
+
+
+C:\Users\hlnatao\Desktop\you\transformers-4.9.1\src\transformers\models\wav2vec2
+
+pyreverse -o png -c transformers\src\transformers\models\wav2vec2  wav2vec2  
+
+
+
+pyreverse transformers-4.9.1\src/transformers -k
+
+
+dot -Tpng classes_png.dot> classes_png.png
+
+
+
+pyreverse modeling_wav2vec2.py -A
+pyreverse tokenization_wav2vec2.py -A
+
+
+
+
+pyreverse modeling_wav2vec2.py tokenization_wav2vec2.py processing_wav2vec2.py feature_extraction_wav2vec2.py configuration_wav2vec2.py -k
+
+pyreverse ../wav2vec2 -A
+ren packages.dot packages.dot
+ren classes.dot wav2vec2.dot
+
+pyreverse modeling_wav2vec2.py -k 
+ren classes.dot modeling_wav2vec2.dot
+
+pyreverse tokenization_wav2vec2.py -k  
+ren classes.dot tokenization_wav2vec2.dot
+
+pyreverse processing_wav2vec2.py -k  
+ren classes.dot processing_wav2vec2.dot
+
+pyreverse feature_extraction_wav2vec2.py -k  
+ren classes.dot feature_extraction_wav2vec2.dot
+
+pyreverse configuration_wav2vec2.py -k  
+ren classes.dot configuration_wav2vec2.dot

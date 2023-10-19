@@ -1,0 +1,44 @@
+digraph "classes" {
+rankdir=BT
+charset="utf-8"
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2Attention" [color="black", fontcolor="black", label=<Wav2Vec2Attention>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2BaseModelOutput" [color="black", fontcolor="black", label=<Wav2Vec2BaseModelOutput>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2Encoder" [color="black", fontcolor="black", label=<Wav2Vec2Encoder>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2EncoderLayer" [color="black", fontcolor="black", label=<Wav2Vec2EncoderLayer>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2EncoderLayerStableLayerNorm" [color="black", fontcolor="black", label=<Wav2Vec2EncoderLayerStableLayerNorm>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2EncoderStableLayerNorm" [color="black", fontcolor="black", label=<Wav2Vec2EncoderStableLayerNorm>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2FeatureExtractor" [color="black", fontcolor="black", label=<Wav2Vec2FeatureExtractor>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2FeatureProjection" [color="black", fontcolor="black", label=<Wav2Vec2FeatureProjection>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2FeedForward" [color="black", fontcolor="black", label=<Wav2Vec2FeedForward>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2ForCTC" [color="black", fontcolor="black", label=<Wav2Vec2ForCTC>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2ForMaskedLM" [color="black", fontcolor="black", label=<Wav2Vec2ForMaskedLM>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2ForPreTraining" [color="black", fontcolor="black", label=<Wav2Vec2ForPreTraining>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2ForPreTrainingOutput" [color="black", fontcolor="black", label=<Wav2Vec2ForPreTrainingOutput>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2GroupNormConvLayer" [color="black", fontcolor="black", label=<Wav2Vec2GroupNormConvLayer>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2GumbelVectorQuantizer" [color="black", fontcolor="black", label=<Wav2Vec2GumbelVectorQuantizer>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2LayerNormConvLayer" [color="black", fontcolor="black", label=<Wav2Vec2LayerNormConvLayer>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2Model" [color="black", fontcolor="black", label=<Wav2Vec2Model>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2NoLayerNormConvLayer" [color="black", fontcolor="black", label=<Wav2Vec2NoLayerNormConvLayer>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2PositionalConvEmbedding" [color="black", fontcolor="black", label=<Wav2Vec2PositionalConvEmbedding>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2PreTrainedModel" [color="black", fontcolor="black", label=<Wav2Vec2PreTrainedModel>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2SamePadLayer" [color="black", fontcolor="black", label=<Wav2Vec2SamePadLayer>, shape="record", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2ForCTC" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2PreTrainedModel" [arrowhead="empty", arrowtail="none"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2ForMaskedLM" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2PreTrainedModel" [arrowhead="empty", arrowtail="none"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2ForPreTraining" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2PreTrainedModel" [arrowhead="empty", arrowtail="none"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2Model" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2PreTrainedModel" [arrowhead="empty", arrowtail="none"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2Attention" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2EncoderLayer" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="attention", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2Attention" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2EncoderLayerStableLayerNorm" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="attention", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2Encoder" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2Model" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="encoder", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2EncoderStableLayerNorm" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2Model" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="encoder", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2FeatureExtractor" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2Model" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="feature_extractor", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2FeatureProjection" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2Model" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="feature_projection", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2FeedForward" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2EncoderLayer" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="feed_forward", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2FeedForward" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2EncoderLayerStableLayerNorm" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="feed_forward", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2GumbelVectorQuantizer" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2ForPreTraining" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="quantizer", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2Model" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2ForCTC" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="wav2vec2", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2Model" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2ForMaskedLM" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="wav2vec2", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2Model" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2ForPreTraining" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="wav2vec2", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2PositionalConvEmbedding" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2Encoder" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="pos_conv_embed", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2PositionalConvEmbedding" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2EncoderStableLayerNorm" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="pos_conv_embed", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2SamePadLayer" -> "transformers.models.wav2vec2.modeling_wav2vec2.Wav2Vec2PositionalConvEmbedding" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="padding", style="solid"];
+}

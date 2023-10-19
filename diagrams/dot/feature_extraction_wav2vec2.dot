@@ -1,0 +1,5 @@
+digraph "classes" {
+rankdir=BT
+charset="utf-8"
+"transformers.models.wav2vec2.feature_extraction_wav2vec2.Wav2Vec2FeatureExtractor" [color="black", fontcolor="black", label=<Wav2Vec2FeatureExtractor>, shape="record", style="solid"];
+}
