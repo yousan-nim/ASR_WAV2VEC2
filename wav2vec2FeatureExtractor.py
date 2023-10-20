@@ -5,7 +5,6 @@ from torch import nn
 from typing import List, Optional, Union, Dict
 from utils import PaddingStrategy, TensorType, BatchFeature, to_numpy
 
-
 class FeatureExtractionMixin(): 
     _auto_class = None
     def __init__(
@@ -21,8 +20,6 @@ class FeatureExtractionMixin():
             
     def _set_processor_class(self, processor_class: str): 
         self._processor_class = processor_class
-    
-
 
 class SequenceFeatureExtractor(FeatureExtractionMixin):
     def __init__(

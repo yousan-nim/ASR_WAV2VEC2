@@ -1,0 +1,24 @@
+digraph "packages" {
+rankdir=BT
+charset="utf-8"
+"transformers.models.wav2vec2" [color="black", label=<transformers.models.wav2vec2>, shape="box", style="solid"];
+"transformers.models.wav2vec2.configuration_wav2vec2" [color="black", label=<transformers.models.wav2vec2.configuration_wav2vec2>, shape="box", style="solid"];
+"transformers.models.wav2vec2.convert_wav2vec2_original_pytorch_checkpoint_to_pytorch" [color="black", label=<transformers.models.wav2vec2.convert_wav2vec2_original_pytorch_checkpoint_to_pytorch>, shape="box", style="solid"];
+"transformers.models.wav2vec2.feature_extraction_wav2vec2" [color="black", label=<transformers.models.wav2vec2.feature_extraction_wav2vec2>, shape="box", style="solid"];
+"transformers.models.wav2vec2.modeling_flax_wav2vec2" [color="black", label=<transformers.models.wav2vec2.modeling_flax_wav2vec2>, shape="box", style="solid"];
+"transformers.models.wav2vec2.modeling_tf_wav2vec2" [color="black", label=<transformers.models.wav2vec2.modeling_tf_wav2vec2>, shape="box", style="solid"];
+"transformers.models.wav2vec2.modeling_wav2vec2" [color="black", label=<transformers.models.wav2vec2.modeling_wav2vec2>, shape="box", style="solid"];
+"transformers.models.wav2vec2.processing_wav2vec2" [color="black", label=<transformers.models.wav2vec2.processing_wav2vec2>, shape="box", style="solid"];
+"transformers.models.wav2vec2.tokenization_wav2vec2" [color="black", label=<transformers.models.wav2vec2.tokenization_wav2vec2>, shape="box", style="solid"];
+"transformers.models.wav2vec2.modeling_flax_wav2vec2" -> "transformers.models.wav2vec2.configuration_wav2vec2" [arrowhead="open", arrowtail="none"];
+"transformers.models.wav2vec2.modeling_tf_wav2vec2" -> "transformers.models.wav2vec2.configuration_wav2vec2" [arrowhead="open", arrowtail="none"];
+"transformers.models.wav2vec2.modeling_wav2vec2" -> "transformers.models.wav2vec2.configuration_wav2vec2" [arrowhead="open", arrowtail="none"];
+"transformers.models.wav2vec2.processing_wav2vec2" -> "transformers.models.wav2vec2.feature_extraction_wav2vec2" [arrowhead="open", arrowtail="none"];
+"transformers.models.wav2vec2.processing_wav2vec2" -> "transformers.models.wav2vec2.tokenization_wav2vec2" [arrowhead="open", arrowtail="none"];
+"transformers.models.wav2vec2" -> "transformers.models.wav2vec2.configuration_wav2vec2" [arrowhead="open", arrowtail="none", style="dashed"];
+"transformers.models.wav2vec2" -> "transformers.models.wav2vec2.feature_extraction_wav2vec2" [arrowhead="open", arrowtail="none", style="dashed"];
+"transformers.models.wav2vec2" -> "transformers.models.wav2vec2.modeling_tf_wav2vec2" [arrowhead="open", arrowtail="none", style="dashed"];
+"transformers.models.wav2vec2" -> "transformers.models.wav2vec2.modeling_wav2vec2" [arrowhead="open", arrowtail="none", style="dashed"];
+"transformers.models.wav2vec2" -> "transformers.models.wav2vec2.processing_wav2vec2" [arrowhead="open", arrowtail="none", style="dashed"];
+"transformers.models.wav2vec2" -> "transformers.models.wav2vec2.tokenization_wav2vec2" [arrowhead="open", arrowtail="none", style="dashed"];
+}

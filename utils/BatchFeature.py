@@ -2,9 +2,9 @@
 import torch 
 import numpy as np
 
-from typing import List, Optional, Union, Dict, Any
+from typing import List, Optional, Union, Dict, Any, Sequence
 from collections import UserDict
-
+from dataclasses import dataclass, field
 from .genertic import TensorType
 
 ################# Utils #################(start)
@@ -47,6 +47,33 @@ def is_torch_device(x):
 ################# Utils #################(end)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+# start utils for tokenizer #################################
+@dataclass(frozen=True, eq=True)
+class AddedToken:
+        content: str = field(default_factory=str)
+        single_word: bool = False
+        lstrip: bool = False
+        rstrip: bool = False
+        normalized: bool = True
+
+        def __getstate__(self):
+            return self.__dict__
+@dataclass(frozen=True, eq=True)
+class EncodingFast: 
+    pass
 class BatchFeature(UserDict): 
     def __init__(
         self, 
@@ -125,3 +152,71 @@ class BatchFeature(UserDict):
                     new_data[k] = v
             self.data = new_data
             return self
+        
+
+class BatchEncoding(UserDict): 
+    def __init__(
+        self,
+        data: Optional[Dict[str, Any]] = None, 
+        encoding: Optional[Union[EncodingFast, Sequence[EncodingFast]]] = None,
+        tensor_type: Union[None, str, TensorType] = None, 
+        prepend_batch_axis: bool = False,
+        n_sequences: Optional[int] = None,
+    ):
+        super().__init__(data)
+
+        encoding = [encoding]
+        self._encoding = encoding
+
+        if n_sequences is None and encoding is not None and len(encoding): 
+            n_sequences = encoding[0].n_sequences
+
+        self._n_sequence = n_sequences
+        self.convert_to_tensors(tensor_type=tensor_type,
+                                prepend_batch_axis=prepend_batch_axis) #? 
+
+    def convert_to_tensors(
+        self,
+        tensor_type: Optional[Union[str, TensorType]] = None, 
+        prepend_batch_axis: bool = False,
+    ):
+        tensor_type = TensorType(tensor_type)
+        as_tensor = torch.tensor 
+        is_tensor = torch.is_tensor
+
+        for key, value in self.items(): 
+            try: 
+                if prepend_batch_axis: 
+                    value = [value]
+
+                if not is_tensor(value): 
+                    tensor = as_tensor(value)
+                    self[key] = tensor
+            except: 
+                if key == "overflowing_tokens": 
+                    if key == "overflowing_tokens":
+                        raise ValueError(
+                        "Unable to create tensor returning overflowing tokens of different lengths. "
+                        "Please see if a fast version of this tokenizer is available to have this feature available."
+                    )
+                raise ValueError(
+                    "Unable to create tensor, you should probably activate truncation and/or padding "
+                    "with 'padding=True' 'truncation=True' to have batched tensors with the same length."
+                )
+        return self
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

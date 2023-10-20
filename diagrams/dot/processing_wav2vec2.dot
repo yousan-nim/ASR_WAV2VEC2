@@ -1,0 +1,5 @@
+digraph "classes" {
+rankdir=BT
+charset="utf-8"
+"transformers.models.wav2vec2.processing_wav2vec2.Wav2Vec2Processor" [color="black", fontcolor="black", label=<Wav2Vec2Processor>, shape="record", style="solid"];
+}
