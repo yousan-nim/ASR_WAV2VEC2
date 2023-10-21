@@ -1809,7 +1809,6 @@ class PreTrainedTokenizerBase(SpecialTokensMixin):
 
     @staticmethod
     def clean_up_tokenization(out_string: str) -> str:
-
         out_string = (
             out_string.replace(" .", ".")
             .replace(" ?", "?")

@@ -6,8 +6,6 @@ import unittest
 from wav2vec2CTCTokenizer import Wav2Vec2CTCTokenizer, VOCAB_FILES_NAMES
 from test_tokenizer_common import TokenizerTesterMixin
 
-# from transformers import TokenizerTesterMixin
-
 class Wav2Vec2CTCTokenizerTest(TokenizerTesterMixin, unittest.TestCase): 
     tokenizer_class = Wav2Vec2CTCTokenizer
 
