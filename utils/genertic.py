@@ -3,6 +3,7 @@ import torch
 import numpy as np
 import importlib.util
 import importlib.metadata
+from enum import Enum
 
 from collections import OrderedDict, UserDict
 from typing import Any, Tuple, Union
@@ -47,14 +48,24 @@ def to_numpy(obj):
     else:
         return obj
     
+class ExplicitEnum(Enum):
+    """
+    Enum with more explicit error message for missing values.
+    """
 
-class PaddingStrategy(): 
+    @classmethod
+    def _missing_(cls, value):
+        raise ValueError(
+            f"{value} is not a valid {cls.__name__}, please select one of {list(cls._value2member_map_.keys())}"
+        )
+
+
+class PaddingStrategy(ExplicitEnum): 
     LONGES = "longest"
     MAX_LENGTH = "max_length"
     DO_NOT_PAD = "do_not_pad"
 
-class TensorType(): 
+class TensorType(ExplicitEnum): 
     PYTORCH = "pt"
-    TENSORFLOW = "pt"
     NUMPY = "np"
-    JAX = "jax"
+    

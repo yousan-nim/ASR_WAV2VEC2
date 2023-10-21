@@ -1445,9 +1445,6 @@ class PreTrainedTokenizerBase(SpecialTokensMixin):
         return_tensors: Optional[Union[str, TensorType]] = None,
         verbose: bool = True,
     ) -> BatchEncoding:
-
-        # If we have a list of dicts, let's convert it in a dict of lists
-        # We do this to allow using this method as a collate_fn function in PyTorch Dataloader
         if isinstance(encoded_inputs, (list, tuple)) and isinstance(encoded_inputs[0], (dict, BatchEncoding)):
             encoded_inputs = {key: [example[key] for example in encoded_inputs] for key in encoded_inputs[0].keys()}
 
@@ -1465,10 +1462,6 @@ class PreTrainedTokenizerBase(SpecialTokensMixin):
                 encoded_inputs["attention_mask"] = []
             return encoded_inputs
 
-        # If we have PyTorch/TF/NumPy tensors/arrays as inputs, we cast them as python objects
-        # and rebuild them afterwards if no return_tensors is specified
-        # Note that we lose the specific device the tensor may be on for PyTorch
-
         first_element = required_input[0]
         if isinstance(first_element, (list, tuple)):
             # first_element might be an empty list/tuple in some edge cases so we grab the first non empty element.
@@ -1479,18 +1472,6 @@ class PreTrainedTokenizerBase(SpecialTokensMixin):
                 first_element = required_input[index][0]
         # At this state, if `first_element` is still a list/tuple, it's an empty one so there is nothing to do.
         if not isinstance(first_element, (int, list, tuple)):
-            # if is_tf_available() and _is_tensorflow(first_element):
-            #     return_tensors = "tf" if return_tensors is None else return_tensors
-            # elif is_torch_available() and _is_torch(first_element):
-            #     return_tensors = "pt" if return_tensors is None else return_tensors
-            # elif isinstance(first_element, np.ndarray):
-            #     return_tensors = "np" if return_tensors is None else return_tensors
-            # else:
-            #     raise ValueError(
-            #         f"type of {first_element} unknown: {type(first_element)}. "
-            #         f"Should be one of a python, numpy, pytorch or tensorflow object."
-            #     )
-            
             return_tensors = "pt" if return_tensors is None else return_tensors
 
             for key, value in encoded_inputs.items():

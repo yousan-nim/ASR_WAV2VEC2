@@ -13,7 +13,7 @@ from enum import Enum
 from urllib.parse import urlparse
 from zipfile import ZipFile, is_zipfile
 from collections import OrderedDict, UserDict
-
+from functools import partial, wraps
 
 from utils import logging
 from typing import Any, BinaryIO, Dict, List, Optional, Tuple, Union
@@ -47,8 +47,6 @@ DISABLE_TELEMETRY = os.getenv("DISABLE_TELEMETRY", False) in ENV_VARS_TRUE_VALUE
 
 _is_offline_mode = True if os.environ.get("TRANSFORMERS_OFFLINE", "0").upper() in ENV_VARS_TRUE_VALUES else False
 
-
-
 def is_offline_mode():
     return _is_offline_mode
 
@@ -70,6 +68,17 @@ def _is_torch(x):
     import torch
     return isinstance(x, torch.Tensor)
 
+def _is_numpy(x):
+    return isinstance(x, np.ndarray)
+
+def torch_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if is_torch_available():
+            return func(*args, **kwargs)
+        else:
+            raise ImportError(f"Method `{func.__name__}` requires PyTorch.")
+    return wrapper
 
 def to_py_obj(obj):
     if isinstance(obj, (dict, UserDict)):
@@ -130,6 +139,8 @@ def get_list_of_files(
             list_of_files.extend([os.path.join(path, f) for f in file_names])
         return list_of_files
     
+    if is_offline_mode():
+        return []
 
 
 

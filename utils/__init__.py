@@ -17,3 +17,4 @@ from .utils import is_remote_url
 from .utils import get_list_of_files
 from .utils import to_py_obj
 from .utils import cached_path
+from .utils import _is_numpy
