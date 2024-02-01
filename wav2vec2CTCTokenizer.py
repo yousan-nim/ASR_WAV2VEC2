@@ -245,6 +245,7 @@ def get_fast_tokenizer_file(
     use_auth_token: Optional[Union[bool, str]] = None,
 ) -> str:
     all_files = get_list_of_files(path_or_repo, revision=revision, use_auth_token=use_auth_token)
+    print(path_or_repo)
     tokenizer_files_map = {}
     for file_name in all_files:
         search = _re_tokenizer_file.search(file_name)
@@ -605,7 +606,12 @@ class PreTrainedTokenizerBase(SpecialTokensMixin):
         raise NotImplementedError()
 
     @classmethod
-    def from_pretrained(cls, pretrained_model_name_or_path: Union[str, os.PathLike], *init_inputs, **kwargs):
+    def from_pretrained(
+        cls, 
+        pretrained_model_name_or_path: Union[str, os.PathLike],
+        *init_inputs, 
+        **kwargs
+    ):
         cache_dir = kwargs.pop("cache_dir", None)
         force_download = kwargs.pop("force_download", False)
         resume_download = kwargs.pop("resume_download", False)

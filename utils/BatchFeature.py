@@ -13,7 +13,7 @@ def is_numpy_array(x):
     return isinstance(x, np.ndarray)
 
 def is_torch_available():
-    return False
+    return True
 
 def _is_torch_dtype(x):
     import torch
@@ -379,7 +379,9 @@ class BatchEncoding(UserDict):
         return self._encodings[batch_index].char_to_word(char_index, sequence_index)
 
     def convert_to_tensors(
-        self, tensor_type: Optional[Union[str, TensorType]] = None, prepend_batch_axis: bool = False
+        self, 
+        tensor_type: Optional[Union[str, TensorType]] = None, 
+        prepend_batch_axis: bool = False
     ):
         if tensor_type is None:
             return self
@@ -388,7 +390,7 @@ class BatchEncoding(UserDict):
         if not isinstance(tensor_type, TensorType):
             tensor_type = TensorType(tensor_type)
 
-        # Get a function reference for the correct framework
+        #Get a function reference for the correct framework
         if  tensor_type == TensorType.PYTORCH:
             if not is_torch_available():
                 raise ImportError("Unable to convert output to PyTorch tensors format, PyTorch is not installed.")
@@ -399,6 +401,9 @@ class BatchEncoding(UserDict):
         else:
             as_tensor = np.asarray
             is_tensor = _is_numpy
+        
+        print(as_tensor)
+        print(is_tensor)
         
         for key, value in self.items():
             try:

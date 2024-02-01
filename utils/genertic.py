@@ -59,7 +59,6 @@ class ExplicitEnum(Enum):
             f"{value} is not a valid {cls.__name__}, please select one of {list(cls._value2member_map_.keys())}"
         )
 
-
 class PaddingStrategy(ExplicitEnum): 
     LONGES = "longest"
     MAX_LENGTH = "max_length"

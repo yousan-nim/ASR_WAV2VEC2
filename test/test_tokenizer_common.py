@@ -5,7 +5,9 @@ import inspect
 import re
 
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Union
-from transformers import PreTrainedTokenizerBase, PreTrainedTokenizer, PreTrainedTokenizerFast
+# from transformers import PreTrainedTokenizerBase, PreTrainedTokenizer, PreTrainedTokenizerFast
+
+from wav2vec2CTCTokenizer import PreTrainedTokenizerBase, PreTrainedTokenizer#, PreTrainedTokenizerFast
 
 
 def get_tests_dir(append_path=None):
@@ -98,5 +100,5 @@ class TokenizerTesterMixin:
     def get_tokenizer(self, **kwargs) -> PreTrainedTokenizer:
         return self.tokenizer_class.from_pretrained(self.tmpdirname, **kwargs)
 
-    def get_rust_tokenizer(self, **kwargs) -> PreTrainedTokenizerFast:
-        return self.rust_tokenizer_class.from_pretrained(self.tmpdirname, **kwargs)
+    # def get_rust_tokenizer(self, **kwargs) -> PreTrainedTokenizerFast:
+    #     return self.rust_tokenizer_class.from_pretrained(self.tmpdirname, **kwargs)

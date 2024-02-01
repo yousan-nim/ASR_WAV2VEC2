@@ -28,7 +28,7 @@ class Wav2Vec2CTCTokenizerTest(TokenizerTesterMixin, unittest.TestCase):
         return Wav2Vec2CTCTokenizer.from_pretrained(self.tmpdirname, **kwargs)
 
     def test_tokenizer_add_token_chars(self): 
-        tokenizer = self.tokenizer_class.from_pretrained("./tokens960")
+        tokenizer = self.tokenizer_class.from_pretrained("./tokens")
 
         tokenizer.add_tokens("x")
         token_ids = tokenizer("C x A").input_ids
@@ -43,7 +43,7 @@ class Wav2Vec2CTCTokenizerTest(TokenizerTesterMixin, unittest.TestCase):
         self.assertEqual(token_ids, [19, 33, 7, 4, 35])
 
     def test_tokenizer_add_token_words(self):
-        tokenizer = self.tokenizer_class.from_pretrained("./tokens960")
+        tokenizer = self.tokenizer_class.from_pretrained("./tokens")
 
         tokenizer.add_tokens('xxx')
         token_ids = tokenizer("C xxx A B").input_ids
@@ -58,7 +58,7 @@ class Wav2Vec2CTCTokenizerTest(TokenizerTesterMixin, unittest.TestCase):
         self.assertEqual(token_ids, [19, 33, 7, 4, 35, 4, 24, 4, 24])
 
     def test_tokenizer_decode(self):
-        tokenizer = self.tokenizer_class.from_pretrained("./tokens960")
+        tokenizer = self.tokenizer_class.from_pretrained("./tokens")
 
         sample_ids = [
             [11, 5, 15, tokenizer.pad_token_id, 15, 8, 98],
@@ -70,7 +70,7 @@ class Wav2Vec2CTCTokenizerTest(TokenizerTesterMixin, unittest.TestCase):
         self.assertEqual(batch_tokens, ["HELLO<unk>", "BYE BYE<unk>"])
 
     def test_tokenizer_decode_special(self):
-        tokenizer = self.tokenizer_class.from_pretrained("./tokens960")
+        tokenizer = self.tokenizer_class.from_pretrained("./tokens")
 
         sample_ids = [
             [11, 5, 15, tokenizer.pad_token_id, 15, 8, 98],
@@ -100,7 +100,7 @@ class Wav2Vec2CTCTokenizerTest(TokenizerTesterMixin, unittest.TestCase):
         self.assertEqual(batch_tokens, ["HELLO<unk>", "BYE BYE<unk>"])
 
     def test_tokenizer_decode_added_tokens(self):
-        tokenizer = self.tokenizer_class.from_pretrained("./tokens960")
+        tokenizer = self.tokenizer_class.from_pretrained("./tokens")
         tokenizer.add_tokens(["!", "?"])
         tokenizer.add_special_tokens({"cls_token": "$$$"})
 
@@ -208,20 +208,8 @@ class Wav2Vec2CTCTokenizerTest(TokenizerTesterMixin, unittest.TestCase):
 
 
 
-
-
-
-
-
-
-
-
-tokens = Wav2Vec2CTCTokenizer.from_pretrained('./tokens')
-print(tokens)
-
-
-
-
+### 21/1/2024 ###
+# TokenizerCommon and TokenizerCTC have been clear
 
 
 
