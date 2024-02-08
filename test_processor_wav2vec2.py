@@ -5,19 +5,12 @@ import shutil
 import tempfile
 import unittest
 
-# from transformers.file_utils import FEATURE_EXTRACTOR_NAME
-# from transformers.models.wav2vec2 import Wav2Vec2CTCTokenizer, Wav2Vec2FeatureExtractor, Wav2Vec2Processor
-# from transformers.models.wav2vec2.tokenization_wav2vec2 import VOCAB_FILES_NAMES
-
-
 from utils import FEATURE_EXTRACTOR_NAME
 from wav2vec2CTCTokenizer import VOCAB_FILES_NAMES
 
 from wav2vec2CTCTokenizer import Wav2Vec2CTCTokenizer
 from wav2vec2FeatureExtractor import Wav2Vec2FeatureExtractor
 from wav2vec2Processor import Wav2Vec2Processor
-
-
 
 from test_feature_extraction_wav2vec2 import floats_list
 
@@ -75,62 +68,62 @@ class Wav2Vec2ProcessorTest(unittest.TestCase):
         self.assertEqual(processor.feature_extractor.to_json_string(), feature_extractor.to_json_string())
         self.assertIsInstance(processor.feature_extractor, Wav2Vec2FeatureExtractor)
 
-    # def test_save_load_pretrained_additional_features(self):
-    #     processor = Wav2Vec2Processor(tokenizer=self.get_tokenizer(), feature_extractor=self.get_feature_extractor())
-    #     processor.save_pretrained(self.tmpdirname)
+    def test_save_load_pretrained_additional_features(self):
+        processor = Wav2Vec2Processor(tokenizer=self.get_tokenizer(), feature_extractor=self.get_feature_extractor())
+        processor.save_pretrained(self.tmpdirname)
 
-    #     tokenizer_add_kwargs = self.get_tokenizer(bos_token="(BOS)", eos_token="(EOS)")
-    #     feature_extractor_add_kwargs = self.get_feature_extractor(do_normalize=False, padding_value=1.0)
+        tokenizer_add_kwargs = self.get_tokenizer(bos_token="(BOS)", eos_token="(EOS)")
+        feature_extractor_add_kwargs = self.get_feature_extractor(do_normalize=False, padding_value=1.0)
 
-    #     processor = Wav2Vec2Processor.from_pretrained(
-    #         self.tmpdirname, bos_token="(BOS)", eos_token="(EOS)", do_normalize=False, padding_value=1.0
-    #     )
+        processor = Wav2Vec2Processor.from_pretrained(
+            self.tmpdirname, bos_token="(BOS)", eos_token="(EOS)", do_normalize=False, padding_value=1.0
+        )
 
-    #     self.assertEqual(processor.tokenizer.get_vocab(), tokenizer_add_kwargs.get_vocab())
-    #     self.assertIsInstance(processor.tokenizer, Wav2Vec2CTCTokenizer)
+        self.assertEqual(processor.tokenizer.get_vocab(), tokenizer_add_kwargs.get_vocab())
+        self.assertIsInstance(processor.tokenizer, Wav2Vec2CTCTokenizer)
 
-    #     self.assertEqual(processor.feature_extractor.to_json_string(), feature_extractor_add_kwargs.to_json_string())
-    #     self.assertIsInstance(processor.feature_extractor, Wav2Vec2FeatureExtractor)
+        self.assertEqual(processor.feature_extractor.to_json_string(), feature_extractor_add_kwargs.to_json_string())
+        self.assertIsInstance(processor.feature_extractor, Wav2Vec2FeatureExtractor)
 
-    # def test_feature_extractor(self):
-    #     feature_extractor = self.get_feature_extractor()
-    #     tokenizer = self.get_tokenizer()
+    def test_feature_extractor(self):
+        feature_extractor = self.get_feature_extractor()
+        tokenizer = self.get_tokenizer()
 
-    #     processor = Wav2Vec2Processor(tokenizer=tokenizer, feature_extractor=feature_extractor)
+        processor = Wav2Vec2Processor(tokenizer=tokenizer, feature_extractor=feature_extractor)
 
-    #     raw_speech = floats_list((3, 1000))
+        raw_speech = floats_list((3, 1000))
 
-    #     input_feat_extract = feature_extractor(raw_speech, return_tensors="np")
-    #     input_processor = processor(raw_speech, return_tensors="np")
+        input_feat_extract = feature_extractor(raw_speech, return_tensors="np")
+        input_processor = processor(raw_speech, return_tensors="np")
 
-    #     for key in input_feat_extract.keys():
-    #         self.assertAlmostEqual(input_feat_extract[key].sum(), input_processor[key].sum(), delta=1e-2)
+        for key in input_feat_extract.keys():
+            self.assertAlmostEqual(input_feat_extract[key].sum(), input_processor[key].sum(), delta=1e-2)
 
-    # def test_tokenizer(self):
-    #     feature_extractor = self.get_feature_extractor()
-    #     tokenizer = self.get_tokenizer()
+    def test_tokenizer(self):
+        feature_extractor = self.get_feature_extractor()
+        tokenizer = self.get_tokenizer()
 
-    #     processor = Wav2Vec2Processor(tokenizer=tokenizer, feature_extractor=feature_extractor)
+        processor = Wav2Vec2Processor(tokenizer=tokenizer, feature_extractor=feature_extractor)
 
-    #     input_str = "This is a test string"
+        input_str = "This is a test string"
 
-    #     with processor.as_target_processor():
-    #         encoded_processor = processor(input_str)
+        with processor.as_target_processor():
+            encoded_processor = processor(input_str)
 
-    #     encoded_tok = tokenizer(input_str)
+        encoded_tok = tokenizer(input_str)
 
-    #     for key in encoded_tok.keys():
-    #         self.assertListEqual(encoded_tok[key], encoded_processor[key])
+        for key in encoded_tok.keys():
+            self.assertListEqual(encoded_tok[key], encoded_processor[key])
 
-    # def test_tokenizer_decode(self):
-    #     feature_extractor = self.get_feature_extractor()
-    #     tokenizer = self.get_tokenizer()
+    def test_tokenizer_decode(self):
+        feature_extractor = self.get_feature_extractor()
+        tokenizer = self.get_tokenizer()
 
-    #     processor = Wav2Vec2Processor(tokenizer=tokenizer, feature_extractor=feature_extractor)
+        processor = Wav2Vec2Processor(tokenizer=tokenizer, feature_extractor=feature_extractor)
 
-    #     predicted_ids = [[1, 4, 5, 8, 1, 0, 8], [3, 4, 3, 1, 1, 8, 9]]
+        predicted_ids = [[1, 4, 5, 8, 1, 0, 8], [3, 4, 3, 1, 1, 8, 9]]
 
-    #     decoded_processor = processor.batch_decode(predicted_ids)
-    #     decoded_tok = tokenizer.batch_decode(predicted_ids)
+        decoded_processor = processor.batch_decode(predicted_ids)
+        decoded_tok = tokenizer.batch_decode(predicted_ids)
 
-    #     self.assertListEqual(decoded_tok, decoded_processor)
+        self.assertListEqual(decoded_tok, decoded_processor)
