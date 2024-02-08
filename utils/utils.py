@@ -113,6 +113,18 @@ def to_py_obj(obj):
     else:
         return obj
     
+def is_tensor(x):
+    """
+    Tests if ``x`` is a :obj:`torch.Tensor`, :obj:`tf.Tensor`, obj:`jaxlib.xla_extension.DeviceArray` or
+    :obj:`np.ndarray`.
+    """
+    if is_torch_available():
+        import torch
+
+        if isinstance(x, torch.Tensor):
+            return True
+
+    return isinstance(x, np.ndarray)
 
 def require_torch(test_case):
     """
@@ -249,6 +261,4 @@ def cached_path(
         return output_path_extracted
 
     return output_path
-
-
 
