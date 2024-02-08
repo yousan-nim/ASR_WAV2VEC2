@@ -3,8 +3,9 @@ import json
 import os
 import tempfile
 
-from transformers.file_utils import is_torch_available, is_vision_available
+# from transformers.file_utils import is_torch_available, is_vision_available
 
+from utils.utils import is_torch_available, is_vision_available
 
 if is_torch_available():
     import numpy as np

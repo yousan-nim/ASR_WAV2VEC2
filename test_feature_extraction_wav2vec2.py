@@ -4,11 +4,13 @@ import unittest
 
 import numpy as np
 
-from wav2vec2FeatureExtractor import Wav2Vec2FeatureExtractor
-from transformers import WAV_2_VEC_2_PRETRAINED_MODEL_ARCHIVE_LIST, Wav2Vec2Config
+# from transformers import WAV_2_VEC_2_PRETRAINED_MODEL_ARCHIVE_LIST, Wav2Vec2Config
 # from transformers import WAV_2_VEC_2_PRETRAINED_MODEL_ARCHIVE_LIST, Wav2Vec2Config, Wav2Vec2FeatureExtractor
-from transformers.testing_utils import require_torch, slow
+# from transformers.testing_utils import require_torch, slow
 
+
+from wav2vec2FeatureExtractor import Wav2Vec2FeatureExtractor
+from utils.utils import require_torch, WAV_2_VEC_2_PRETRAINED_MODEL_ARCHIVE_LIST #, Wav2Vec2Config
 from test_sequence_feature_extraction_common import SequenceFeatureExtractionTestMixin
 
 
@@ -105,19 +107,18 @@ class Wav2Vec2FeatureExtractionTest(SequenceFeatureExtractionTestMixin, unittest
         for enc_seq_1, enc_seq_2 in zip(encoded_sequences_1, encoded_sequences_2):
             self.assertTrue(np.allclose(enc_seq_1, enc_seq_2, atol=1e-3))
 
-    # def test_zero_mean_unit_variance_normalization(self):
-    #     feat_extract = self.feature_extraction_class(**self.feat_extract_tester.prepare_feat_extract_dict())
-    #     speech_inputs = [floats_list((1, x))[0] for x in range(800, 1400, 200)]
-    #     processed = feat_extract(speech_inputs, padding="longest")
-    #     input_values = processed.input_values
+    def test_zero_mean_unit_variance_normalization(self):
+        feat_extract = self.feature_extraction_class(**self.feat_extract_tester.prepare_feat_extract_dict())
+        speech_inputs = [floats_list((1, x))[0] for x in range(800, 1400, 200)]
+        processed = feat_extract(speech_inputs, padding="longest")
+        input_values = processed.input_values
+        def _check_zero_mean_unit_variance(input_vector):
+            self.assertTrue(np.abs(np.mean(input_vector)) < 1e-3)
+            self.assertTrue(np.abs(np.var(input_vector) - 1) < 1e-3)
 
-    #     def _check_zero_mean_unit_variance(input_vector):
-    #         self.assertTrue(np.abs(np.mean(input_vector)) < 1e-3)
-    #         self.assertTrue(np.abs(np.var(input_vector) - 1) < 1e-3)
-
-    #     _check_zero_mean_unit_variance(input_values[0, :800])
-    #     _check_zero_mean_unit_variance(input_values[1, :1000])
-    #     _check_zero_mean_unit_variance(input_values[2])
+        _check_zero_mean_unit_variance(input_values[0, :800])
+        _check_zero_mean_unit_variance(input_values[1, :1000])
+        _check_zero_mean_unit_variance(input_values[2])
 
     # @slow
     # @require_torch

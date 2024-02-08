@@ -76,85 +76,90 @@ class CharSpan(NamedTuple):
     start: int
     end: int
 
-
-class BatchFeature(UserDict): 
-    def __init__(
-        self, 
-        data: Optional[Dict[str, Any]] = None,
-        tensor_type: Union[None, str, TensorType] = None,
-    ): 
+class BatchFeature(UserDict):
+    def __init__(self, data: Optional[Dict[str, Any]] = None, tensor_type: Union[None, str, TensorType] = None):
         super().__init__(data)
         self.convert_to_tensors(tensor_type=tensor_type)
 
-    def convert_to_tensors(
-            self, 
-            tensor_type: Optional[Union[str, TensorType]] = None
-    ):
-        ################# Checking tensor types #################(start)
+    def __getitem__(self, item: str) -> Union[Any]:
+        if isinstance(item, str):
+            return self.data[item]
+        else:
+            raise KeyError("Indexing with integers is not available when using Python based feature extractors")
 
+    def __getattr__(self, item: str):
+        try:
+            return self.data[item]
+        except KeyError:
+            raise AttributeError
+
+    def __getstate__(self):
+        return {"data": self.data}
+
+    def __setstate__(self, state):
+        if "data" in state:
+            self.data = state["data"]
+
+    # Copied from transformers.tokenization_utils_base.BatchEncoding.keys
+    def keys(self):
+        return self.data.keys()
+
+    # Copied from transformers.tokenization_utils_base.BatchEncoding.values
+    def values(self):
+        return self.data.values()
+
+    # Copied from transformers.tokenization_utils_base.BatchEncoding.items
+    def items(self):
+        return self.data.items()
+
+    def convert_to_tensors(self, tensor_type: Optional[Union[str, TensorType]] = None):
         if tensor_type is None:
-            return self 
-        
-        if not isinstance(tensor_type, TensorType): 
+            return self
+
+        # Convert to TensorType
+        if not isinstance(tensor_type, TensorType):
             tensor_type = TensorType(tensor_type)
-            print(tensor_type)
 
-        elif tensor_type == TensorType.PYTORCH: 
-            def as_tensor(value): 
-                if isinstance(value, (list, tuple)) and len(value) > 0 and isinstance(value[0], np.ndarray): 
-                    value = np.ndarray(value)
+        if tensor_type == TensorType.PYTORCH:
+            if not is_torch_available():
+                raise ImportError("Unable to convert output to PyTorch tensors format, PyTorch is not installed.")
+            import torch
+
+            def as_tensor(value):
+                if isinstance(value, (list, tuple)) and len(value) > 0 and isinstance(value[0], np.ndarray):
+                    value = np.array(value)
                 return torch.tensor(value)
-            is_tensor = torch.tensor(value)
-        
-        else: 
-            def as_tensor(value, dtype=None):
-                if isinstance(value, (list, tuple)) and isinstance(value[0], (list, tuple, np.ndarray)):
-                    value_lens = [len(val) for val in value]
-                    if len(set(value_lens)) > 1 and dtype is None:
-                        value = as_tensor([np.asarray(val) for val in value], dtype==object)
-                return np.asarray(value, dtype=dtype)
-                
-            is_tensor = is_numpy_array
 
-        ################# Checking tensor types #################(end)
+            is_tensor = torch.is_tensor
 
-        for key, value in self.items(): 
-            try: 
-                if not is_tensor(value): 
+        else:
+            as_tensor = np.asarray
+            is_tensor = _is_numpy
+
+        # Do the tensor conversion in batch
+        for key, value in self.items():
+            try:
+                if not is_tensor(value):
                     tensor = as_tensor(value)
 
-                    self[key] = tensor 
-            except: 
-                if key == 'overflowing_values': 
-                    raise ValueError("Unable to create tensor returning overflowing values of diferen length")
-                raise("Unable to create Tensor, you should activate padding with 'padding=True to have batched tensors with same length.")
-            
-            return self
-        
-        def to(self, *args, **kwargs) -> "BatchFeature": 
-            new_data = {}
-            device = kwargs.get("device")
+                    self[key] = tensor
+            except:  # noqa E722
+                if key == "overflowing_values":
+                    raise ValueError("Unable to create tensor returning overflowing values of different lengths. ")
+                raise ValueError(
+                    "Unable to create tensor, you should probably activate padding "
+                    "with 'padding=True' to have batched tensors with the same length."
+                )
 
-            if device is None and len(args) > 0: 
-                arg = args[0]
+        return self
 
-            if is_torch_dtype(arg):
-                pass
-            elif isinstance(arg, str) or is_torch_device(arg) or isinstance(arg, int):
-                device = arg
-            else:
-                raise ValueError(f"Attempting to cast a BatchFeature to type {str(arg)}. This is not supported.")
-            
-            for k, v in self.items(): 
-                if torch.is_floatinf_point(v): 
-                    new_data[k] = v.to(*args, **kwargs)
-                elif device is not None: 
-                    new_data[k] = v.to(device=device)
-                else: 
-                    new_data[k] = v
-            self.data = new_data
-            return self
+    @torch_required
+    def to(self, device: Union[str, "torch.device"]) -> "BatchFeature":
+        if isinstance(device, str) or _is_torch_device(device) or isinstance(device, int):
+            self.data = {k: v.to(device=device) for k, v in self.data.items()}
         
+        return self
+
 
 class BatchEncoding(UserDict): 
     def __init__(

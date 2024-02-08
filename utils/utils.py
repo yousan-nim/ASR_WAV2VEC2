@@ -8,6 +8,7 @@ import numpy as np
 from uuid import uuid4
 from pathlib import Path
 from filelock import FileLock
+import unittest
 
 from enum import Enum
 from urllib.parse import urlparse
@@ -53,6 +54,15 @@ CONFIG_NAME = "config.json"
 FEATURE_EXTRACTOR_NAME = "preprocessor_config.json"
 MODEL_CARD_NAME = "modelcard.json"
 
+
+WAV_2_VEC_2_PRETRAINED_MODEL_ARCHIVE_LIST = [
+    "facebook/wav2vec2-base-960h",
+    "facebook/wav2vec2-large-960h",
+    "facebook/wav2vec2-large-960h-lv60",
+    "facebook/wav2vec2-large-960h-lv60-self",
+    # See all Wav2Vec2 models at https://huggingface.co/models?filter=wav2vec2
+]
+
 _is_offline_mode = True if os.environ.get("TRANSFORMERS_OFFLINE", "0").upper() in ENV_VARS_TRUE_VALUES else False
 
 def is_offline_mode():
@@ -71,6 +81,9 @@ def is_remote_url(url_or_filename):
 def is_torch_available():
     _torch_available = importlib.util.find_spec("torch") is not None
     return _torch_available
+
+def is_vision_available():
+    return importlib.util.find_spec("PIL") is not None
 
 def _is_torch(x):
     import torch
@@ -99,7 +112,26 @@ def to_py_obj(obj):
         return obj.tolist()
     else:
         return obj
+    
 
+def require_torch(test_case):
+    """
+    Decorator marking a test that requires PyTorch.
+
+    These tests are skipped when PyTorch isn't installed.
+
+    """
+    return unittest.skipUnless(is_torch_available(), "test requires PyTorch")(test_case)
+
+
+def slow(test_case):
+    """
+    Decorator marking a test as slow.
+
+    Slow tests are skipped by default. Set the RUN_SLOW environment variable to a truthy value to run them.
+
+    """
+    return unittest.skipUnless(_run_slow_tests, "test is slow")(test_case)
 
 class ExplicitEnum(Enum):
     @classmethod

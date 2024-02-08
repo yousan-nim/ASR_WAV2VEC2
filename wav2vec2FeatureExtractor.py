@@ -1,5 +1,6 @@
 import os
-import torch 
+# import torch 
+import copy
 import json
 import numpy as np
 
@@ -17,6 +18,9 @@ from utils import (FEATURE_EXTRACTOR_NAME,
                    is_offline_mode, 
                    is_remote_url
                    )
+
+
+PreTrainedFeatureExtractor = Union["SequenceFeatureExtractor"]  
 
 class FeatureExtractionMixin(): 
     _auto_class = None
@@ -37,6 +41,16 @@ class FeatureExtractionMixin():
         feature_extractor_dict, kwargs = cls.get_feature_extractor_dict(pretrained_model_name_or_path, **kwargs)
 
         return cls.from_dict(feature_extractor_dict, **kwargs)
+    
+    def save_pretrained(self, save_directory: Union[str, os.PathLike]):
+        if os.path.isfile(save_directory):
+            raise AssertionError(f"Provided path ({save_directory}) should be a directory, not a file")
+        os.makedirs(save_directory, exist_ok=True)
+        # If we save using the predefined names, we can load using `from_pretrained`
+        output_feature_extractor_file = os.path.join(save_directory, FEATURE_EXTRACTOR_NAME)
+
+        self.to_json_file(output_feature_extractor_file)
+
     
     @classmethod
     def get_feature_extractor_dict(
@@ -97,8 +111,49 @@ class FeatureExtractionMixin():
         return feature_extractor_dict, kwargs
 
 
-    def _set_processor_class(self, processor_class: str): 
-        self._processor_class = processor_class
+    @classmethod
+    def from_dict(
+        cls,
+        feature_extractor_dict: Dict[str, Any], **kwargs) -> PreTrainedFeatureExtractor:
+
+        return_unused_kwargs = kwargs.pop("return_unused_kwargs", False)
+
+        feature_extractor = cls(**feature_extractor_dict)
+
+        to_remove = []
+        for key, value in kwargs.items():
+            if hasattr(feature_extractor, key):
+                setattr(feature_extractor, key, value)
+                to_remove.append(key)
+        for key in to_remove:
+            kwargs.pop(key, None)
+
+        if return_unused_kwargs:
+            return feature_extractor, kwargs
+        else:
+            return feature_extractor
+
+    def to_dict(self) -> Dict[str, Any]:
+        output = copy.deepcopy(self.__dict__)
+        output["feature_extractor_type"] = self.__class__.__name__
+        return output
+
+    @classmethod
+    def from_json_file(cls, json_file: Union[str, os.PathLike]) -> PreTrainedFeatureExtractor:
+        with open(json_file, "r", encoding="utf-8") as reader:
+            text = reader.read()
+        feature_extractor_dict = json.loads(text)
+        return cls(**feature_extractor_dict)
+
+    def to_json_string(self) -> str:
+        return json.dumps(self.to_dict(), indent=2, sort_keys=True) + "\n"
+
+    def to_json_file(self, json_file_path: Union[str, os.PathLike]):
+        with open(json_file_path, "w", encoding="utf-8") as writer:
+            writer.write(self.to_json_string())
+
+    def __repr__(self):
+        return f"{self.__class__.__name__} {self.to_json_string()}"
 
 class SequenceFeatureExtractor(FeatureExtractionMixin):
     def __init__(
@@ -172,13 +227,82 @@ class SequenceFeatureExtractor(FeatureExtractionMixin):
         padding_strategy, max_length, _ = self._get_padding_strategies(padding=padding, max_length=max_length)
 
         required_input = processed_features[self.model_input_names[0]]
+        if required_input and not isinstance(required_input[0], (list, tuple)):
+            processed_features = self._pad(
+                processed_features,
+                max_length=max_length,
+                padding_strategy=padding_strategy,
+                pad_to_multiple_of=pad_to_multiple_of,
+                return_attention_mask=return_attention_mask,
+            )
+            return BatchFeature(processed_features, tensor_type=return_tensors)
 
-        # for key, value in processed_features.items():
-        #     if isinstance(value[0], (int, float)):
-        #         processed_features[key] = to_numpy(value)
-        #     else:
-        #         processed_features[key] = [to_numpy(v) for v in value]
+        batch_size = len(required_input)
+        assert all(
+            len(v) == batch_size for v in processed_features.values()
+        ), "Some items in the output dictionary have a different batch size than others."
 
+        if padding_strategy == PaddingStrategy.LONGEST:
+            max_length = max(len(inputs) for inputs in required_input)
+            padding_strategy = PaddingStrategy.MAX_LENGTH
+
+        batch_outputs = {}
+        for i in range(batch_size):
+            inputs = dict((k, v[i]) for k, v in processed_features.items())
+            outputs = self._pad(
+                inputs,
+                max_length=max_length,
+                padding_strategy=padding_strategy,
+                pad_to_multiple_of=pad_to_multiple_of,
+                return_attention_mask=return_attention_mask,
+            )
+
+            for key, value in outputs.items():
+                if key not in batch_outputs:
+                    batch_outputs[key] = []
+                batch_outputs[key].append(value)
+
+        return BatchFeature(batch_outputs, tensor_type=return_tensors)
+
+    def _pad(
+        self,
+        processed_features: Union[Dict[str, List[float]], BatchFeature],
+        max_length: Optional[int] = None,
+        padding_strategy: PaddingStrategy = PaddingStrategy.DO_NOT_PAD,
+        pad_to_multiple_of: Optional[int] = None,
+        return_attention_mask: Optional[bool] = None,
+    ) -> dict:
+        required_input = processed_features[self.model_input_names[0]]
+
+        if padding_strategy == PaddingStrategy.LONGEST:
+            max_length = len(required_input)
+
+        if max_length is not None and pad_to_multiple_of is not None and (max_length % pad_to_multiple_of != 0):
+            max_length = ((max_length // pad_to_multiple_of) + 1) * pad_to_multiple_of
+
+        needs_to_be_padded = padding_strategy != PaddingStrategy.DO_NOT_PAD and len(required_input) != max_length
+
+        if needs_to_be_padded:
+            difference = max_length - len(required_input)
+            padding_vector = self.feature_size * [self.padding_value] if self.feature_size > 1 else self.padding_value
+            if self.padding_side == "right":
+                if return_attention_mask:
+                    processed_features["attention_mask"] = [1] * len(required_input) + [0] * difference
+                processed_features[self.model_input_names[0]] = required_input + [
+                    padding_vector for _ in range(difference)
+                ]
+            elif self.padding_side == "left":
+                if return_attention_mask:
+                    processed_features["attention_mask"] = [0] * difference + [1] * len(required_input)
+                processed_features[self.model_input_names[0]] = [
+                    padding_vector for _ in range(difference)
+                ] + required_input
+            else:
+                raise ValueError("Invalid padding strategy:" + str(self.padding_side))
+        elif return_attention_mask and "attention_mask" not in processed_features:
+            processed_features["attention_mask"] = [1] * len(required_input)
+
+        return processed_features
 
 
 

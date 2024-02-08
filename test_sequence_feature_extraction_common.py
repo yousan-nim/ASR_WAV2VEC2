@@ -1,8 +1,12 @@
 import numpy as np
 
-from transformers import BatchFeature
-from transformers.testing_utils import require_tf, require_torch
+# from transformers import BatchFeature
+# from transformers.testing_utils import require_tf, require_torch
 
+
+
+from utils.BatchFeature import BatchFeature
+from utils.utils import require_torch
 from test_feature_extraction_common import FeatureExtractionSavingTestMixin
 
 
@@ -51,24 +55,6 @@ class SequenceFeatureExtractionTestMixin(FeatureExtractionSavingTestMixin):
         input_name = feat_extract.model_input_names[0]
 
         processed_features = BatchFeature({input_name: speech_inputs}, tensor_type="pt")
-
-        batch_features_input = processed_features[input_name]
-
-        if len(batch_features_input.shape) < 3:
-            batch_features_input = batch_features_input[:, :, None]
-
-        self.assertTrue(
-            batch_features_input.shape
-            == (self.feat_extract_tester.batch_size, len(speech_inputs[0]), self.feat_extract_tester.feature_size)
-        )
-
-    @require_tf
-    def test_batch_feature_tf(self):
-        speech_inputs = self.feat_extract_tester.prepare_inputs_for_common(equal_length=True)
-        feat_extract = self.feature_extraction_class(**self.feat_extract_dict)
-        input_name = feat_extract.model_input_names[0]
-
-        processed_features = BatchFeature({input_name: speech_inputs}, tensor_type="tf")
 
         batch_features_input = processed_features[input_name]
 
@@ -208,19 +194,6 @@ class SequenceFeatureExtractionTestMixin(FeatureExtractionSavingTestMixin):
 
         self.assertTrue(abs(input_np.astype(np.float32).sum() - input_pt.numpy().sum()) < 1e-2)
 
-    @require_tf
-    def test_padding_accepts_tensors_tf(self):
-        feat_extract = self.feature_extraction_class(**self.feat_extract_dict)
-        speech_inputs = self.feat_extract_tester.prepare_inputs_for_common()
-        input_name = feat_extract.model_input_names[0]
-
-        processed_features = BatchFeature({input_name: speech_inputs})
-
-        input_np = feat_extract.pad(processed_features, padding="longest", return_tensors="np")[input_name]
-        input_tf = feat_extract.pad(processed_features, padding="longest", return_tensors="tf")[input_name]
-
-        self.assertTrue(abs(input_np.astype(np.float32).sum() - input_tf.numpy().sum()) < 1e-2)
-
     def test_attention_mask(self):
         feat_dict = self.feat_extract_dict
         feat_dict["return_attention_mask"] = True
@@ -232,6 +205,7 @@ class SequenceFeatureExtractionTestMixin(FeatureExtractionSavingTestMixin):
         processed = BatchFeature({input_name: speech_inputs})
 
         processed = feat_extract.pad(processed, padding="longest", return_tensors="np")
+
         self.assertIn("attention_mask", processed)
         self.assertListEqual(list(processed.attention_mask.shape), list(processed[input_name].shape[:2]))
         self.assertListEqual(processed.attention_mask.sum(-1).tolist(), input_lenghts)
